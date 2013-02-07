@@ -1,0 +1,4 @@
+name: AntiGodmode
+author: Eimref
+main: com.eimref.antigodmode.AntiGodmode
+version: ${version}
