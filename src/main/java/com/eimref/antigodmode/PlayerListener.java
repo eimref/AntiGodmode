@@ -3,8 +3,12 @@ package com.eimref.antigodmode;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PlayerListener implements Listener {
     private final AntiGodmode plugin; 
@@ -13,9 +17,26 @@ public class PlayerListener implements Listener {
         plugin = instance;
     }
     
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerDeath(PlayerDeathEvent event)
+    {
+    	plugin.setMetadata(event.getEntity(), "lastNDTLivingTicks", null);
+    }
+    
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerRespawn(PlayerRespawnEvent event)
+    {
+    	plugin.setMetadata(event.getPlayer(), "lastNDTLivingTicks", null);
+    }
+    
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+    	plugin.setMetadata(event.getPlayer(), "lastNDTLivingTicks", null);
+    }
+    
     @EventHandler
     public void onEntityDamage(final EntityDamageEvent event) {
-    	if ((!(event.getEntity() instanceof Player)) || event.getEntity().isDead())
+    	if ((!(event.getEntity() instanceof Player)))
     		return;
     	
     	Player player = (Player)event.getEntity();
@@ -33,7 +54,7 @@ public class PlayerListener implements Listener {
     		if (player.getNoDamageTicks() > ndtShouldBe)
     		{
     			player.setNoDamageTicks(ndtShouldBe);
-    			
+
     			// Make sure the player isn't somehow set invulnerable for a long time..
     			if (player.getNoDamageTicks() > maxNDT)
     				player.setNoDamageTicks(maxNDT);
